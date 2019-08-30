@@ -514,7 +514,7 @@ class DebugGachaPresenceUpdate(tornado.web.RequestHandler):
         self.write("ok")
 
 @route(r"/tl_debug")
-@dev_mode_only
+#@dev_mode_only
 class DebugViewTLs(tornado.web.RequestHandler):
     def get(self):
         #chara_id = int(chara_id)
@@ -578,3 +578,57 @@ class Ping(tornado.web.RequestHandler):
             len(starlight.data.char_cache),
             "It's working"
         ))
+
+@route(r"/obs")
+class PageForObs(HandlerSyncedWithMaster):
+    def head(self, pretend_date):
+        return self.get(pretend_date)
+
+    def home_get(self, pretend_date = None):
+        if pretend_date:
+            now = pytz.utc.localize(datetime.strptime(pretend_date, "%Y-%m-%d"))
+        else:
+            now = pytz.utc.localize(datetime.utcnow())
+
+        if now.day == 29 and now.month == 2:
+            now += timedelta(days=1)
+
+        events = starlight.data.events(now)
+        event_rewards = starlight.data.event_rewards(events)
+
+        gachas = starlight.data.gachas(now)
+        gacha_limited = starlight.data.limited_availability_cards(gachas)
+
+        # Show only cu/co/pa chara birthdays. Chihiro is a minefield and causes
+        # problems
+        bd = list(filter(lambda char: 0 < char.type < 4,
+                         starlight.data.potential_birthdays(now)))
+
+        recent_history = self.settings["tle"].get_history(10)
+
+        # cache priming has a high overhead so prime all icons at once
+        preprime_set = set()
+        for h in recent_history:
+            preprime_set.update(h.card_list())
+        starlight.data.cards(preprime_set)
+        
+        history = recent_history
+        events = zip(events, event_rewards)
+        la_cards = zip(gachas, gacha_limited)
+        birthdays = bd
+        return history, events, la_cards, birthdays
+
+    def get(self):
+        var = self.home_get()
+        self.render("obs.html", history=var[0], events=var[1],
+            la_cards=var[2], birthdays=var[3], **self.settings)
+        #self.settings["analytics"].analyze_request(self.request, self.__class__.__name__)
+
+@route(r"/obs_ja")
+class PageForObs_ja(PageForObs):
+    def get(self, pretend_date = None):
+        var = PageForObs.home_get(self)
+        self.render("obs_ja.html", history=var[0], events=var[1],
+            la_cards=var[2], birthdays=var[3], **self.settings)
+
+        

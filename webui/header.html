@@ -1,7 +1,11 @@
+<style type="text/css">.site_notice span::before { content:"﹡"; padding-right:4px; }</style>
+    {% include "partials/header_text.html" %}
 <div class="container global_header">
   <span>导航</span>:
   <a href="/">主页/搜索</a>
   <a href="/skill_table">按特技</a>
   <a href="/lead_skill_table">按领队技能</a>
   <a href="/history">按加入日期</a>
+  {% from urllib.parse import urlparse, urljoin %}
+  <a href="{{ urljoin('https://starlight.kirara.ca', request.path ) }}">English</a>
 </div>

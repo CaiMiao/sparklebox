@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <!-- Customized Icons Set -->
+  <link rel="icon" type="image/png" href="/static/favicon-16x16.png" sizes="16x16">
+  <link rel="icon" type="image/png" href="/static/favicon-32x32.png" sizes="32x32">
+  <link rel="apple-touch-icon" href="static/apple-touch-icon-precomposed.png">
+  <link rel="icon" type="image/png" href="/static/android-chrome-192x192.png" sizes="192x192">
+  <link rel="manifest" href="/static/manifest.json">
+  <link rel="mask-icon" href="/static/safari-pinned-tab.svg" color="#5bbad5">
+  <meta name="apple-mobile-web-app-title" content="Starlight DB">
+  <meta name="application-name" content="Starlight DB">
+  <meta name="msapplication-TileColor" content="#94e4ff">
+  <meta name="msapplication-TileImage" content="/static/mstile-144x144.png">
+  <meta name="msapplication-config" content="/static/browserconfig.xml">
+  <meta name="theme-color" content="#000000">
+  <!-- Not yet <meta name="apple-mobile-web-app-capable" content="yes">-->
+  
+  {% if is_dev %}
+  <link rel="stylesheet/less" type="text/css" href="{{ handler.static_url("css/main.less") }}" />
+  <script type="text/javascript" src="{{ handler.static_url("js/less.js") }}"></script>
+  {% else %}
+  <link rel="stylesheet" type="text/css" href="{{ handler.static_url("css/main.css") }}" />
+  {% end %}
+  <link rel="stylesheet" type="text/css" href="{{ image_host }}/icons2/icons.css?c={{ starlight.data.version }}" />
+  <link rel="stylesheet" type="text/css" href="{{ image_host }}/icons2/icons@2x.css?c={{ starlight.data.version }}" />
+  <script type="text/javascript" src="{{ handler.static_url("js/home.js") }}"></script>
+  <style>.container { max-width:800px; } .box { margin:0; width:100%; }</style>
+
+  <title>Starlight DB Main (for Broadcaster)</title>
+</head>
+
+{% import random %}
+
+<body>
+  <div class="container birthday">
+    {% for char in birthdays %}
+    <div class="birthday_banner r_{{ enums.attribute(char.type) }}" style="display:none" data-birthday="{{ char.birth_month }}/{{ char.birth_day }}">
+      <div class="ribbon r_{{ enums.attribute(char.type) }}"></div>
+      <div class="icon icon_{{ starlight.data.cards_belonging_to_char(char.chara_id)[-1] }}" style="position:absolute;top:5px;left:5px;"></div>
+      今日は <a href="/char/{{ char.chara_id }}">{{ char.name }}</a> の誕生日です。<small>（<span class="where_the_birthday_is"><!-- strings in home.js  --></span>）</small>。
+	  <!-- starlight.en.westernized_name(char).split()[0] --><br>
+      おめでとうございます！({{ char.birth_month }}/{{ char.birth_day }})
+    </div>
+    {% end %}
+    <script> birthday_hider_init(); </script>
+  </div>
+
+  <div class="container">
+    {% set events_ = list(events) %}
+    {% set la_cards_ = list(la_cards) %}
+
+    {% if any((events_, la_cards_)) %}
+    <div class="box black">
+      {% for event, reward_list in events_ %}
+      <div class="header">
+        <span class="item left">イベント：<b>{% raw tlable(event.name) %}</b></span>
+        <span class="item ext"></span>
+        <span class="item right">終了まであと：<span class="counter" data-count-to="{{ event.end_date.timestamp() }}">(JS?)</span></span>
+      </div>
+      <div class="content" style="background:#333;">
+        <div class="iconex_row">
+          <span>今から走ろう。<br>イベント報酬：</span>
+          {% for cid in reward_list %}
+          {% raw webutil.icon_ex(cid, request.is_low_bandwidth) %}
+          {% end %}
+        </div>
+      </div>
+      {% end %}
+      {% for gacha, available in la_cards_ %}
+      <div class="header">
+        {% if available %}
+        <span class="item left">限定ガシャ開催！</span>
+        {% else %}
+        <span class="item left">開催中ガシャ</span>
+        {% end %}
+        <span class="item ext"></span>
+        <span class="item right">
+          終了まであと：<span class="counter" data-count-to="{{ gacha.end_date.timestamp() }}">(JS?)</span>
+          {% if gacha.rates != gacha.rates._REGULAR_RATES %}
+          <small>確率：R {{ gacha.rates.r }}% / SR {{ gacha.rates.sr }}% / SSR {{ gacha.rates.ssr }}%</small>
+          {% end %}
+        </span>
+      </div>
+      {% if available %}
+      <div class="content" style="background:#333;text-align:left;">
+        <div class="iconex_row">
+          {% for ent in available %}
+          {% raw webutil.icon_ex(ent, request.is_low_bandwidth) %}
+          {% end %}
+        </div>
+      </div>
+      {% else %}
+      <div class="content" style="background:#333;text-align:left;">
+      </div>
+      {% end %}
+      {% end %}
+    </div>
+    {% end %}
+  </div>
+
+  <script> event_counter_init(); </script>
+</body>
+</html>

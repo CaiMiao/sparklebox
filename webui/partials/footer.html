@@ -4,7 +4,7 @@
         --- the information below is only useful for devs, please ignore it ---<br><br>
 
         truth version {{ starlight.data.version }},
-        opened at {{ starlight.data.load_date_jst }},
+        locally opened at {{ starlight.data.load_date_jst }},
         app version {{ starlight.display_app_ver() }}<br>
         did this page trigger a version check? {{ "yes" if handler.did_trigger_update else "no" }}<br>
         did this page generate primes? {{ starlight.data.primed_this }}<br>
@@ -12,7 +12,20 @@
         checking for truth updates... performance may be degraded for a few seconds.
         {% end %}
     </small><br>
-    <small>Report bugs/suggest features on <a href="https://github.com/summertriangle-dev/sparklebox">GitHub</a></small><br>
-    <small>中文翻译分支维护：<a href="https://github.com/CaiMiao/sparklebox-schinese">GitHub</a></small>
-    <small>该站的所有者并未声明拥有该页面下任何内容的所有权。</small>
+    <small>Report bugs/suggest features on <a href="https://github.com/summertriangle-dev/sparklebox">GitHub</a><br>
+    <small>中文翻译分支维护：<a href="https://github.com/CaiMiao/sparklebox-schinese">GitHub</a> / 
+    <a href="https://deresute.me/243803619">CGSS ID: 243803619</a></small><br/>
+    <small>该站的所有者并不拥有该页面下任何内容的所有权。</small><br/><br/>
+    <small>由于暂未另有声明，基于法律原因本站暂不对欧盟用户提供服务。</small>
 </footer>
+{% include easter_script.html %}
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-90774326-1', 'auto');
+  ga('send', 'pageview');
+
+</script>

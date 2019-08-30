@@ -17,33 +17,25 @@
   <meta name="msapplication-config" content="/static/browserconfig.xml">
   <meta name="theme-color" content="#000000">
   <!-- Not yet <meta name="apple-mobile-web-app-capable" content="yes">-->
-
-  <!-- Robots Meta -->
-  <meta name="robots" content="index,nofollow">
-
+  
   {% if is_dev %}
   <link rel="stylesheet/less" type="text/css" href="{{ handler.static_url("css/main.less") }}" />
   <script type="text/javascript" src="{{ handler.static_url("js/less.js") }}"></script>
   {% else %}
   <link rel="stylesheet" type="text/css" href="{{ handler.static_url("css/main.css") }}" />
   {% end %}
-  <link rel="stylesheet" type="text/css" href="{{ image_host }}/icons2/icons_single.css?c={{ starlight.data.version }}" />
+  <link rel="stylesheet" type="text/css" href="{{ image_host }}/icons2/icons.css?c={{ starlight.data.version }}" />
+  <link rel="stylesheet" type="text/css" href="{{ image_host }}/icons2/icons@2x.css?c={{ starlight.data.version }}" />
   <script type="text/javascript" src="{{ handler.static_url("js/home.js") }}"></script>
-  <script type="text/javascript" src="{{ handler.static_url("js/modal.js") }}"></script>
   <script type="text/javascript" src="{{ handler.static_url("js/tlinject.js") }}"></script>
   <style>.container { max-width:800px; } .box { margin:0; width:100%; }</style>
 
-  <title>Starlight DB Main</title>
+  <title>Starlight DB Main (for Broadcaster)</title>
 </head>
 
+{% import random %}
+
 <body>
-  {% include header.html %}
-
-  <div class="container">
-    <input type="text" id="search" class="text_field" placeholder="{{ _("搜索偶像") }}" onkeyup="suggest(this, this.value)">
-    <div id="suggestions"></div>
-  </div>
-
   <div class="container">
     {% for char in birthdays %}
     <div class="birthday_banner r_{{ enums.attribute(char.type) }}" style="display:none" data-birthday="{{ char.birth_month }}/{{ char.birth_day }}">
@@ -58,50 +50,60 @@
   </div>
 
   <div class="container">
-    <p>当前活动与扭蛋：</p>
-    {% for history_entry in current_history %}
+    {% set events_ = list(events) %}
+    {% set la_cards_ = list(la_cards) %}
 
-    {% if history_entry.type() == 2 %}
-      {% module Template("partials/hist_event.html", history_entry=history_entry, countdown=True) %}
-    {% elif history_entry.type() == 3 %}
-      {% module Template("partials/hist_gacha.html", history_entry=history_entry, rates_src=live_gacha_rates, countdown=True) %}
-    {% elif history_entry.type() == 4 %}
-      {% module Template("partials/hist_new_ns.html", history_entry=history_entry) %}
-    {% else %}
-      {# omitted #}
-    {% end %}
-
+    {% if any((events_, la_cards_)) %}
+    <div class="box black">
+      {% for event, reward_list in events_ %}
+      <div class="header">
+        <span class="item left">活动：<b>{% raw tlable(event.name) %}</b></span>
+        <span class="item ext"></span>
+        <span class="item right">结束倒计时：<span class="counter" data-count-to="{{ event.end_date.timestamp() }}">(JS?)</span></span>
+      </div>
+      <div class="content" style="background:#333;">
+        <div class="iconex_row">
+          <span>开始肝吧。<br>活动奖励：</span>
+          {% for cid in reward_list %}
+          {% raw webutil.icon_ex(cid, request.is_low_bandwidth) %}
+          {% end %}
+        </div>
+      </div>
+      {% end %}
+      {% for gacha, available in la_cards_ %}
+      <div class="header">
+        {% if available %}
+        <span class="item left">限定卡池氪氪氪！</span>
+        {% else %}
+        <span class="item left">目前卡池</span>
+        {% end %}
+        <span class="item ext"></span>
+        <span class="item right">
+          结束倒计时：<span class="counter" data-count-to="{{ gacha.end_date.timestamp() }}">(JS?)</span>
+          {% if gacha.rates != gacha.rates._REGULAR_RATES %}
+          <small>概率：R {{ gacha.rates.r }}% / SR {{ gacha.rates.sr }}% / SSR {{ gacha.rates.ssr }}%</small>
+          {% end %}
+        </span>
+      </div>
+      {% if available %}
+      <div class="content" style="background:#333;text-align:left;">
+        <div class="iconex_row">
+          {% for ent in available %}
+          {% raw webutil.icon_ex(ent, request.is_low_bandwidth) %}
+          {% end %}
+        </div>
+      </div>
+      {% else %}
+      <div class="content" style="background:#333;text-align:left;">
+      </div>
+      {% end %}
+      {% end %}
+    </div>
     {% end %}
   </div>
 
-  <div class="container">
-    <!-- custom homepage text starts here. -->
-    {% include "partials/frontpage_text.html" %}
-    <!-- custom homepage text ends here. -->
-  </div>
-
-  <div class="container history">
-    {% for history_entry in history %}
-
-    {% if history_entry.type() == 2 %}
-      {% module Template("partials/hist_event.html", history_entry=history_entry, countdown=False) %}
-    {% elif history_entry.type() == 3 %}
-      {% module Template("partials/hist_gacha.html", history_entry=history_entry, rates_src=live_gacha_rates, countdown=False) %}
-    {% elif history_entry.type() == 4 %}
-      {% module Template("partials/hist_new_ns.html", history_entry=history_entry) %}
-    {% else %}
-      {# omitted #}
-    {% end %}
-
-    {% end %}
-  </div>
-
-  <div class="container">
-    <p><a href="/history">更多历史记录</a></p>
-  </div>
-
-  {% include partials/footer.html %}
   <script> tlinject_activate(); </script>
   <script> event_counter_init(); </script>
+  <style type="text/css">.crowd_tl_notice { display:none; }</style>
 </body>
 </html>
