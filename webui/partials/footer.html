@@ -12,6 +12,14 @@
         checking for truth updates... performance may be degraded for a few seconds.
         {% end %}
     </small><br>
+    <small class="developer" style="display: inline; color: #666;">
+      资源版本号 {{ starlight.data.version }},
+      本服open时间 {{ starlight.data.load_date_jst }},
+      游戏版本号 {{ starlight.display_app_ver() }}<br>
+      {% if starlight.update.is_currently_updating() %}
+      正在更新资源...
+      {% end %}
+    </small><br>
     <small>Report bugs/suggest features on <a href="https://github.com/summertriangle-dev/sparklebox">GitHub</a><br>
     <small>中文翻译分支维护：<a href="https://github.com/CaiMiao/sparklebox-schinese">GitHub</a> / 
     <a href="https://deresute.me/243803619">CGSS ID: 243803619</a></small><br/>
