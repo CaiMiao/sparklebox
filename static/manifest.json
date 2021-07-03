@@ -1,0 +1,30 @@
+{
+    "name": "Starlight DB SChinese",
+    "short_name": "SLDB-SC",
+    "start_url": "/?utm_source=web_app_manifest",
+    "display": "minimal-ui",
+    "background_color": "#fff",
+    "description": "Starlight Stage Database",
+    "icons": [
+        {
+            "src": "static/favicon-194x194.png",
+            "sizes": "194x194"
+        },
+        {
+            "src": "static/favicon.ico",
+            "sizes": "16x16 32x32"
+        }
+    ],
+    "lang": "zh-Hans",
+    ​​"orientation": "any",
+    "related_applications": [{
+        "platform": "web"
+    }, {
+        "platform": "play",
+        "url": "https://play.google.com/store/apps/details?id=jp.co.bandainamcoent.BNEI0242",
+        "id": "jp.co.bandainamcoent.BNEI0242"
+    }, {
+        "platform": "itunes",
+        "url": "https://itunes.apple.com/jp/app/aidorumasuta-shindereragaruzu/id1016318735?mt=8"
+    }]
+}
